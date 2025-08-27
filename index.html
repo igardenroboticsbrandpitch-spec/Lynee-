@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iGarden by Fairland | The Future of Pool Cleaning</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FFFFFF; /* Changed to solid white */
+            color: #2F4F4F; /* Dark Slate Gray for readability on light background */
+            min-height: 100vh;
+        }
+        .header-bg {
+            background-color: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(8px);
+        }
+        .nav-link {
+            transition: color 0.3s ease;
+            position: relative;
+            padding-bottom: 4px;
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: #DC2626; /* Changed to red-600 to match iGarden logo */
+            transition: width 0.3s ease;
+        }
+        .nav-link.active, .nav-link:hover {
+            color: #DC2626; /* Changed to red-600 to match iGarden logo */
+        }
+        .nav-link.active::after, .nav-link:hover::after {
+            width: 100%;
+        }
+        .section-card {
+            background-color: rgba(255, 255, 255, 0.95); /* Already nearly white, keeping */
+            border-radius: 1.5rem; /* More rounded */
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15); /* Stronger shadow */
+            padding: 2.5rem; /* More padding */
+        }
+        .hero-title {
+            /* Impactful red gradient from the robot in the image */
+            background: linear-gradient(90deg, #FF4500, #FF6347); /* OrangeRed to Tomato */
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .data-point {
+            background-color: #FFFFFF; /* Changed to solid white */
+            border-radius: 1.5rem;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            color: #36454F; /* Charcoal for readability */
+        }
+        /* Adjusted vision-section for a more vibrant but consistent blue */
+        .vision-section {
+            background-color: #E0F2FE; /* Light blue, similar to Tailwind's blue-100 */
+            color: #2F4F4F; /* Dark Slate Gray for readability on light background */
+            padding: 3rem;
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15); /* Slightly stronger shadow */
+            text-shadow: none;
+        }
+        /* New styles for the blue and red gradient cards within vision-section */
+        .blue-ocean-card-blue {
+            background: linear-gradient(to bottom right, #60A5FA, #3B82F6); /* Blue gradient, matching the 77% circle */
+            color: white; /* White text for contrast */
+            border: 1px solid #2563EB; /* Darker blue border */
+        }
+        .blue-ocean-card-red {
+            background: linear-gradient(to bottom right, #F87171, #EF4444); /* Red gradient, matching the 23% circle */
+            color: white; /* White text for contrast */
+            border: 1px solid #DC2626; /* Darker red border */
+        }
+
+        .animate-fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        .animate-fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .animate-pop-in {
+            animation: popIn 0.8s ease-out forwards;
+        }
+        @keyframes popIn {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .animate-bounce-subtle {
+            animation: bounceSubtle 2s infinite ease-in-out;
+        }
+        @keyframes bounceSubtle {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 320px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .path-dot {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background-color: #3B82F6;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #3B82F6;
+        }
+        /* Hide default canvas, as we don't have charts in market sections by default */
+        /* canvas { display: none; } */
+
+        /* Styling for the new table within the German market section (now chart) */
+        .german-chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px; /* Wider for bar chart */
+            margin-left: auto;
+            margin-right: auto;
+            height: 400px; /* Adjust height as needed */
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header id="header" class="header-bg fixed top-0 left-0 right-0 z-50 shadow-lg">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="text-2xl font-bold text-gray-900">
+                <span class="text-red-600">i</span><span>Garden</span> by Fairland
+            </div>
+            <div class="hidden md:flex space-x-8">
+                <a href="#market-overview" class="nav-link text-gray-600 font-medium">Market Overview</a>
+                <a href="#market-dynamics" class="nav-link text-gray-600 font-medium">Market Dynamics</a>
+                <a href="#german-market" class="nav-link text-gray-600 font-medium">German Market</a>
+                <a href="#market-snapshot-visual" class="nav-link text-gray-600 font-medium">iGarden – Artful Living Technology</a>
+                <a href="#problem" class="nav-link text-gray-600 font-medium">The Problem</a>
+                <a href="#solution" class="nav-link text-gray-600 font-medium">Our Solution</a>
+                <a href="#video-demo" class="nav-link text-gray-600 font-medium">Product Demo</a>
+                <a href="#about" class="nav-link text-gray-600 font-medium">About Us</a>
+                <a href="#team" class="nav-link text-gray-600 font-medium">Meet the Team</a>
+            </div>
+            <button id="mobile-menu-button" class="md:hidden text-gray-600 focus:outline-none">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+            </button>
+        </nav>
+        <div id="mobile-menu" class="hidden md:hidden bg-white">
+            <a href="#market-overview" class="block py-2 px-4 text-sm text-gray-600 hover:bg-gray-100">Market Overview</a>
+            <a href="#market-dynamics" class="block py-2 px-4 text-sm text-gray-600 hover:bg-gray-100">Market Dynamics</a>
+            <a href="#german-market" class="block py-2 px-4 text-sm text-gray-600 hover:bg-gray-100">German Market</a>
+            <a href="#market-snapshot-visual" class="block py-2 px-4 text-sm text-gray-600 hover:bg-gray-100">Classic Pool Type</a>
+            <a href="#problem" class="block py-2 px-4 text-sm text-gray-600 hover:bg-gray-100">The Problem</a>
+            <a href="#solution" class="block py-2 px-4 text-sm text-gray-600 hover:bg-gray-100">Our Solution</a>
+            <a href="#video-demo" class="block py-2 px-4 text-sm text-gray-600 hover:bg-gray-100">Product Demo</a>
+            <a href="#about" class="block py-2 px-4 text-sm text-gray-600 hover:bg-gray-100">About Us</a>
+            <a href="#team" class="block py-2 px-4 text-sm text-gray-600 hover:bg-gray-100">Meet the Team</a>
+        </div>
+    </header>
+
+    <main class="mt-20"> <!-- Margin top to clear fixed header -->
+        <section id="hero" class="pt-16 pb-20 bg-white">
+            <div class="container mx-auto px-6 text-center">
+                <h1 class="text-3xl md:text-4xl font-extrabold hero-title leading-tight mb-4 animate-fade-in">The Wireless Revolution in Pool Cleaning.</h1>
+                <p class="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto animate-fade-in" style="transition-delay: 0.2s;">iGarden by Fairland — The game-changer in pool cleaning. Powered by AI, built with the world’s longest endurance, giving you ultimate freedom and unmatched performance.</p>
+                <img src="https://www.fairlandgroup.com/core/extend/kindeditor/attached/image/20250227/20250227102305_35364.jpg" alt="" class="mx-auto rounded-lg shadow-md mt-12 mb-8 max-w-lg sm:max-w-xl lg:max-w-2xl animate-fade-in" style="transition-delay: 0.4s;">
+            </div>
+        </section>
+
+        <!-- Global Pool Landscape Section (aligned with Hero Section styling) -->
+        <section id="market-overview" class="py-20 bg-white section-card container mx-auto my-8">
+            <h2 class="text-4xl font-bold text-slate-900 mb-8 text-center animate-fade-in">Market Potential: Global</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center animate-fade-in" style="transition-delay: 0.2s;">
+                <div class="data-point">
+                    <p class="text-4xl font-bold text-blue-600">40M</p>
+                    <p class="text-xl mt-3 text-gray-700 font-semibold">Total Global Pools</p>
+                </div>
+                <div class="data-point">
+                    <p class="text-4xl font-bold text-green-600">33M</p>
+                    <p class="text-xl mt-3 text-gray-700 font-semibold">Private Pools</p>
+                </div>
+                <div class="data-point">
+                    <p class="text-4xl font-bold text-purple-600 animate-bounce-subtle">1M</p>
+                    <p class="text-xl mt-3 text-gray-700 font-semibold">New Pools Annually</p>
+                    <p class="text-sm text-gray-600">(Expanding market opportunity)</p>
+                </div>
+            </div>
+            <p class="mt-8 text-sm text-gray-600 text-center max-w-3xl mx-auto animate-fade-in" style="transition-delay: 0.4s;">
+                The global pool market is vast, with <strong>33 million private pools</strong> out of a total of approximately <strong>40 million pools worldwide</strong>. This significant private segment offers immense potential for advanced cleaning solutions.
+            </p>
+        </section>
+
+        <!-- Market Dynamics: Penetration & Blue Ocean Opportunities Section (aligned with Hero Section styling) -->
+        <section id="market-dynamics" class="py-20 bg-white section-card container mx-auto my-8">
+            <h2 class="text-4xl font-bold text-slate-900 mb-8 text-center animate-fade-in">Market Dynamics: Penetration & Blue Ocean Opportunities</h2>
+
+            <!-- Robotic Pool Cleaner Penetration Sub-section -->
+            <div class="mb-12 animate-fade-in" style="transition-delay: 0.2s;">
+                <h3 class="text-2xl font-bold text-gray-800 mb-6 text-center">Current Robotic Cleaner Penetration</h3>
+                <div class="flex flex-col lg:flex-row items-center justify-around space-y-8 lg:space-y-0 lg:space-x-12">
+                    <!-- Pools with Robots -->
+                    <div class="flex flex-col items-center flex-1">
+                        <div class="relative w-48 h-48 rounded-full bg-gradient-to-br from-orange-500 to-red-600 flex items-center justify-center text-white text-5xl font-bold shadow-xl">
+                            23%
+                            <div class="absolute inset-0 rounded-full border-4 border-red-700 opacity-75"></div>
+                        </div>
+                        <p class="mt-5 text-2xl font-semibold text-orange-600 text-center">Pools with Robotic Cleaners</p>
+                        <p class="text-md text-gray-600 text-center">(Primarily wired, ripe for upgrade)</p>
+                    </div>
+                    <!-- Pools without Robots -->
+                    <div class="flex flex-col items-center flex-1">
+                        <div class="relative w-48 h-48 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white text-5xl font-bold shadow-xl">
+                            77%
+                            <div class="absolute inset-0 rounded-full border-4 border-blue-700 opacity-75"></div>
+                        </div>
+                        <p class="mt-5 text-2xl font-semibold text-blue-700 text-center">Pools Without Robotic Cleaners</p>
+                        <p class="text-md text-gray-600 text-center">(Vast untapped potential)</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- The Wireless Blue Ocean Market Sub-section - Adjusted for vibrant background and inner cards -->
+            <div class="vision-section mt-12 animate-fade-in" style="transition-delay: 0.4s;">
+                <h3 class="text-4xl font-bold text-center mb-8 text-gray-900">Discovering the "Blue Ocean" for Wireless Robotic Pool Cleaners</h3>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                    <!-- Wired to Wireless Transition (now left, red themed) -->
+                    <div class="p-7 rounded-xl shadow-lg border blue-ocean-card-red">
+                        <p class="text-3xl font-bold mb-4">The Wired-to-Wireless Transition</p>
+                        <p class="text-lg leading-relaxed">
+                            Of the 23% using wired robots, many upgrade every 3–5 years. Wireless technology is the obvious next step.
+                        </p>
+                    </div>
+                    <!-- Untapped Market (now right, blue themed) -->
+                    <div class="p-7 rounded-xl shadow-lg border blue-ocean-card-blue">
+                        <p class="text-3xl font-bold mb-4">The Untapped 77%</p>
+                        <p class="text-lg leading-relaxed">
+                            This vast segment depends on manual work or expensive cleaning services. What they want now is simple: smarter, easier, and wireless.
+                        </p>
+                    </div>
+                </div>
+                <p class="text-center text-2xl mt-10 font-extrabold animate-pulse text-gray-900">
+                    The future is wireless. The opportunity is immense.
+                </p>
+            </div>
+        </section>
+
+        <!-- New Section: German Pool Market ——Huge Potential! -->
+        <section id="german-market" class="py-20 bg-white section-card container mx-auto my-8">
+            <h2 class="text-4xl font-bold text-slate-900 mb-8 text-center animate-fade-in">German Pool Market Potential</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center animate-fade-in" style="transition-delay: 0.2s;">
+                <div class="data-point">
+                    <p class="text-4xl font-bold text-blue-600">2.1M</p>
+                    <p class="text-xl mt-3 text-gray-700 font-semibold">Private Pool Quantity</p>
+                </div>
+                <div class="data-point">
+                    <p class="text-4xl font-bold text-green-600">1.5M</p>
+                    <p class="text-xl mt-3 text-gray-700 font-semibold">Above-Ground + Underground Pools</p>
+                </div>
+                <div class="data-point">
+                    <p class="text-4xl font-bold text-purple-600 animate-bounce-subtle">50K</p>
+                    <p class="text-xl mt-3 text-gray-700 font-semibold">Annual New Pool Construction Volume</p>
+                </div>
+            </div>
+            
+
+            <div class="mt-12 animate-fade-in" style="transition-delay: 0.8s;">
+                <h3 class="text-2xl font-bold text-gray-800 mb-6 text-center">German Pool Types and Quantities (2021 vs 2023)</h3>
+                <div class="german-chart-container">
+                    <canvas id="germanPoolTypesChart"></canvas>
+                </div>
+                <!-- Note for cleaning service costs -->
+                <div class="text-center text-red-600 text-sm mt-4">
+                    <p>Per-cleaning service cost: Small Pool ~€540; Medium Pool ~€620; Large Pool ~€960:</p>
+             </div>
+            </div>
+
+            <div class="mt-12 p-8 rounded-lg shadow-md bg-slate-100 animate-fade-in" style="transition-delay: 0.6s;">
+                <h3 class="text-2xl font-bold text-gray-800 mb-4 text-center">German DSV Alliance Initiative</h3>
+                <p class="text-lg text-gray-600 text-center">
+                    Recommended to establish a 12-year swimming pool funding program with an annual budget of <strong class="text-red-600">€1 billion</strong> for the construction and renovation of swimming pools, as well as pool-related research and teaching. (2025)
+                </p>
+            </div>
+        </section>
+
+        <!-- Modified "A Vast Blue Ocean Opportunity" Section - Only Image -->
+        <section id="market-snapshot-visual" class="py-20 bg-white container mx-auto text-center animate-fade-in">
+            <h2 class="text-3xl md:text-4xl font-bold text-slate-900 mb-8">iGarden – Artful Living Technology</h2>
+            <img src="https://mma.prnewswire.com/media/2725378/K_Series_lifestyle_kv.jpg?p=publish" alt="">
+        </section>
+
+        <section id="problem" class="py-20 bg-white">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-slate-900 mb-4 animate-fade-in">The Hidden Frustrations of Pool Owners</h2>
+                    <p class="text-lg text-gray-600 max-w-3xl mx-auto animate-fade-in" style="transition-delay: 0.2s;">Imagine finally having a relaxing weekend, only to be frustrated by your pool cleaner. We listened to countless user complaints and designed iGarden to eliminate these common headaches.</p>
+                </div>
+                <div class="grid md:grid-cols-3 gap-8 text-center">
+                    <div class="bg-slate-100 p-8 rounded-lg shadow-md animate-fade-in">
+                        <div class="text-4xl mb-4">🔋</div>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">The Mid-Clean Shutdown</h3>
+                        <p class="text-gray-600">A typical cleaner's battery dies halfway through the job. You’re left with an incomplete clean and hours of waiting for a recharge. It’s a chore, not a convenience.</p>
+                        <!-- Added image for "The Mid-Clean Shutdown" section -->
+                        <div class="flex flex-col items-center mt-6 space-y-4">
+                            <img src="https://d15shllkswkct0.cloudfront.net/wp-content/blogs.dir/1/files/2016/02/battery-critical.jpg" alt="" class="w-full max-w-xs h-auto rounded-lg shadow-md">
+                        </div>
+                    </div>
+                    <div class="bg-slate-100 p-8 rounded-lg shadow-md animate-fade-in" style="transition-delay: 0.2s;">
+                        <div class="text-4xl mb-4">🔌</div>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">The Tangled Mess</h3>
+                        <p class="text-gray-600">Wired robots seem easy, but tangled cords limit reach and make storage a hassle — far from the effortless pool experience you want.</p>
+                        <!-- Added images for "The Tangled Mess" section -->
+                        <div class="flex flex-col items-center mt-6 space-y-4">
+                            <img src="https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcSMhN4lBLQmr-Z9VV15ZNPh-sbdrmfFnTpLwwlp1Wk2G_OzQ_dI">
+                        </div>
+                    </div>
+                    <div class="bg-slate-100 p-8 rounded-lg shadow-md animate-fade-in" style="transition-delay: 0.4s;">
+                        <div class="text-4xl mb-4">🧩</div>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">The Missed Spots</h3>
+                        <p class="text-gray-600">Many robots follow random, chaotic paths, leaving patches of your pool untouched. This means you have to go back and manually finish the job, defeating the purpose of an automatic cleaner.</p>
+                        <!-- Added image for "The Missed Spots" section -->
+                        <div class="flex flex-col items-center mt-6 space-y-4">
+                            <img src="https://scontent-lax3-1.xx.fbcdn.net/v/t39.30808-6/536269761_645240278627047_683989806783306112_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=127cfc&_nc_ohc=3bI-t8VSZD8Q7kNvwHkHRM9&_nc_oc=AdlLkvyZhw-JpKQvlOiyQjM_VDFrQGAeTC7boGnDc2Nn5elyothEOlscAAvNYZwKgZg&_nc_zt=23&_nc_ht=scontent-lax3-1.xx&_nc_gid=RmsV2LO0eAGa9FV9QgthQw&oh=00_AfUm30Oshgw9clRyGz2F8lUycb5_x42g9KlA-bUthYF6uQ&oe=68AE0173" alt="" class="w-full max-w-xs h-auto rounded-lg shadow-md">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="solution" class="py-20 bg-slate-100">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4 animate-fade-in">The iGarden Solution: Built for True Freedom</h2>
+                    <p class="text-lg text-gray-600 max-w-3xl mx-auto animate-fade-in">Our AI wireless robotic cleaner is built on three pillars of innovation, designed to deliver a truly autonomous and superior cleaning experience.</p>
+                </div>
+                <div class="grid lg:grid-cols-3 gap-8">
+                    <div class="bg-white p-8 rounded-lg shadow-lg border border-slate-200 animate-fade-in">
+                        <div class="flex items-center mb-4">
+                            <div class="text-3xl mr-4">🏆</div>
+                            <h3 class="text-2xl font-semibold text-gray-900">Unmatched Endurance</h3>
+                        </div>
+                        <p class="text-gray-600 mb-6">
+  With our patented <span class="font-bold">Full-Inverter Technology</span>, 
+  the iGarden robot runs for up to <span class="font-bold">8-10 hours</span> on a single charge—4x the industry average. 
+  Our prototype even set a <span class="font-bold">40-hour Guinness World Record</span>, 
+  proving our technological leadership.</p>
+                        <div class="chart-container h-64">
+                            <canvas id="enduranceChart"></canvas>
+                        </div>
+                        <img src="https://www.fairlandgroup.com/core/extend/kindeditor/attached/image/20250227/20250227102305_35364.jpg" alt="" class="mx-auto rounded-lg shadow-md mt-6 w-full">
+                    </div>
+                    <div class="bg-white p-8 rounded-lg shadow-lg border border-slate-200 animate-fade-in" style="transition-delay: 0.2s;">
+                        <div class="flex items-center mb-4">
+                            <div class="text-3xl mr-4">🎯</div>
+                            <h3 class="text-2xl font-semibold text-gray-900">Revolutionary Cleaning Efficiency</h3>
+                        </div>
+                        <p class="text-gray-600 mb-6">Using 7 advanced sensors and smart navigation, our robot maps the most efficient <span class="font-bold">"3D S-Path"</span>. This ensures cleaning efficiency is twice that of random-path cleaners, leaving no area untouched.</p>
+                        <div id="path-animation-container" class="relative w-full h-64 bg-slate-200 rounded-lg overflow-hidden flex items-center justify-center">
+                            <div class="absolute inset-0 border-4 border-slate-300 rounded-lg"></div>
+                            <div class="path-dot"></div>
+                            <div id="coverage-counter" class="absolute bottom-4 right-4 text-gray-600 font-bold text-xl">Coverage: 0%</div>
+                            <div class="absolute top-2 left-2 text-sky-600 font-semibold">"3D S-Path" Animation Demo</div>
+                        </div>
+                        <img src="https://store.igarden.ai/cdn/shop/files/9-2.jpg?v=1751360217&width=1500" alt="" class="mx-auto rounded-lg shadow-md mt-6 w-full">
+                    </div>
+                    <div class="bg-white p-8 rounded-lg shadow-lg border border-slate-200 animate-fade-in" style="transition-delay: 0.4s;">
+                        <div class="flex items-center mb-4">
+                            <div class="text-3xl mr-4">🛡️</div>
+                            <h3 class="text-2xl font-semibold text-gray-900">Uncompromising Quality</h3>
+                        </div>
+                        <p class="text-gray-600 mb-6">We pursue a near-zero failure rate through extreme testing. The motor box is 6m deep water tested, and with over 70,000 units shipped, our failure rate is below <span class="font-bold">0.7%</span>, setting a new standard for reliability.</p>
+                        <div class="space-y-4">
+                            <div class="bg-slate-100 p-4 rounded-lg">
+                                <p class="font-semibold text-gray-900">Extreme Waterproofing</p>
+                                <p class="text-sm text-gray-600">Tested to a depth of 9 meters to ensure durability.</p>
+                            </div>
+                            <div class="bg-slate-100 p-4 rounded-lg">
+                                <p class="font-semibold text-gray-900">Industry-Leading Reliability</p>
+                                <p class="text-sm text-gray-600">Failure rate below 0.7%, far below the industry average of 3-5%.</p>
+                            </div>
+                             <div class="bg-slate-100 p-4 rounded-lg">
+                                <p class="font-semibold text-gray-900">AI Timer Function</p>
+                                <p class="text-sm text-gray-600">Set a cleaning schedule for up to two weeks on a single charge.</p>
+                            </div>
+                        </div>
+                    </div>
+              </div>
+                <div class="mt-20 text-center animate-fade-in">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">The iGarden K Series: Our Product Lineup</h2>
+                    <p class="text-lg text-gray-600 max-w-3xl mx-auto">The iGarden K Series is an AI wireless robot line designed for the American residential pool market. The series aims to meet diverse user needs, from basic functionality to advanced smart cleaning, all in one package.</p>
+                    <div class="flex flex-wrap justify-center mt-12 gap-8 lg:flex-nowrap lg:justify-between">
+                        <div class="bg-white p-6 rounded-lg shadow-lg border border-slate-200 w-full sm:w-60 lg:w-1/4 transition-all hover:scale-105">
+                            <img src="https://store.igarden.ai/cdn/shop/files/D1.jpg?v=1754298479" alt="" class="rounded-lg mb-4">
+                            <h3 class="text-xl font-semibold text-gray-900 mb-2">iGarden K40</h3>
+                            <p class="text-gray-500 text-sm mb-4">Mainstream model, balancing performance and price.</p>
+                            <ul class="text-sm text-gray-600 text-left list-disc list-inside space-y-1">
+                                <li>Smart path planning</li>
+                                <li>High cleaning efficiency</li>
+                                <li>Suitable for medium pools</li>
+                            </ul>
+                        </div>
+                         <div class="bg-white p-6 rounded-lg shadow-lg border border-slate-200 w-full sm:w-60 lg:w-1/4 transition-all hover:scale-105">
+                            <img src="https://store.igarden.ai/cdn/shop/files/D1.jpg?v=1754298479" alt="" class="rounded-lg mb-4">
+                            <h3 class="text-xl font-semibold text-gray-900 mb-2">iGarden K60</h3>
+                            <p class="text-gray-500 text-sm mb-4">High-performance model, providing a superior cleaning experience.</p>
+                            <ul class="text-sm text-gray-600 text-left list-disc list-inside space-y-1">
+                                <li>3D S-Path planning</li>
+                                <li>Ultra-long endurance</li>
+                                <li>AI smart features</li>
+                            </ul>
+                        </div>
+                         <div class="bg-white p-6 rounded-lg shadow-lg border border-slate-200 w-full sm:w-60 lg:w-1/4 transition-all hover:scale-105">
+                            <img src="https://store.igarden.ai/cdn/shop/files/D1.jpg?v=1754298479" alt="" class="rounded-lg mb-4">
+                            <h3 class="text-xl font-semibold text-gray-900 mb-2">iGarden K80</h3>
+                            <p class="text-gray-500 text-sm mb-4">Premium model, optimized for medium to large pools.</p>
+                            <ul class="text-sm text-gray-600 text-left list-disc list-inside space-y-1">
+                                <li>Full-featured smart navigation</li>
+                                <li>Unmatched Endurance</li>
+                                <li>Remote app control</li>
+                            </ul>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow-lg border border-slate-200 w-full sm:w-60 lg:w-1/4 transition-all hover:scale-105">
+                      <!-- Image container: crop white edges + slightly enlarge -->
+                      <div class="w-full h-48 overflow-hidden rounded-lg mb-4">
+                        <img src="https://store.igarden.ai/cdn/shop/files/K_PRO_RGB.jpg?v=1752115915" 
+                             alt="iGarden Kpro" 
+                             class="w-full h-full object-cover transition-transform duration-300" 
+                             style="transform: scale(1.16);">
+                      </div>
+
+                      <!-- Product info -->
+                      <h3 class="text-xl font-semibold text-gray-900 mb-2">iGarden Kpro</h3>
+                      <p class="text-gray-500 text-sm mb-4">Flagship model, designed for large pools.</p>
+                      <ul class="text-sm text-gray-600 text-left list-disc list-inside space-y-1">
+                          <li>Longest endurance – 21 Days on a single charge</li>
+                          <li>Smart Touch Control and App Control</li>
+                          <li>3-Year Warranty, Zero Repairs</li>
+                      </ul>
+                    </div>
+                    </div>
+                    <a href="https://store.igarden.ai" target="_blank" class="mt-12 inline-block bg-sky-600 text-white font-bold py-3 px-8 rounded-full shadow-lg transition-transform hover:scale-105">Explore Our Products</a>
+                </div>
+            </div>
+        </section>
+
+        <section id="video-demo" class="py-20 bg-white">
+            <div class="container mx-auto px-6 text-center">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4 animate-fade-in">See for Yourself: iGarden Robot in Action</h2>
+                <p class="text-lg text-gray-600 max-w-3xl mx-auto mb-12 animate-fade-in">Watch our AI wireless pool robot effortlessly handle any cleaning challenge.</p>
+                <section class="bg-gray-50 py-12">
+  <div class="max-w-4xl mx-auto text-center">
+    <!-- Title -->
+    <h2 class="text-3xl font-bold text-gray-800 mb-4">Smarter. Faster. Designed for effortless pool care.</h2>
+
+    <!-- Video -->
+<div class="w-full h-[600px] rounded-2xl overflow-hidden shadow-2xl animate-fade-in">
+      <iframe src="https://store.igarden.ai/cdn/shop/videos/c/vp/14cc2970968d4d3ab32f0de1a67e9aab/14cc2970968d4d3ab32f0de1a67e9aab.HD-1080p-7.2Mbps-50544600.mp4?v=0" 
+        frameborder="0" 
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+        allowfullscreen
+        class="w-full h-full">
+      </iframe>
+    </div>
+<!-- New Marketing Section -->
+<section id="marketing-updates" class="py-20 bg-slate-100">
+  <div class="container mx-auto px-6">
+    <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-12 text-center animate-fade-in">
+      Our Latest Marketing Progress
+    </h2>
+
+    <!-- Grid with 3 equal items -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      
+      <!-- Image 1 -->
+      <div class="bg-white rounded-2xl shadow-lg overflow-hidden transition-transform duration-300 hover:scale-105">
+        <h3 class="text-l font-semibold text-gray-800 text-center py-4">
+          Partner with USA Artistic Swimming Team
+        </h3>
+        <a href="https://www.prnewswire.com/news-releases/igarden-named-official-sponsor-of-usa-artistic-swimming-302531948.html" target="_blank" rel="noopener noreferrer">
+          <img 
+            src="https://mma.prnewswire.com/media/2752238/20250814_DSC06994.jpg" 
+            alt="Marketing Innovation 1" 
+            class="w-full h-64 object-cover"
+          />
+        </a>
+      </div>
+
+      <!-- Image -->
+      <div class="bg-white rounded-2xl shadow-lg overflow-hidden transition-transform duration-300 hover:scale-105">
+        <h3 class="text-l font-semibold text-gray-800 text-center py-4">iGarden at the 24 Hours of Le Mans in France</h3>
+        <div class="w-full h-64">
+          <img 
+            src="https://www.fairlandgroup.com/static/upload/image/20250619/1750318908456833.jpg" 
+            alt="iGarden at 24 Hours of Le Mans" 
+            class="w-full h-full object-cover"
+          />
+        </div>
+      </div>
+
+      <!-- Image 2 -->
+      <div class="bg-white rounded-2xl shadow-lg overflow-hidden transition-transform duration-300 hover:scale-105">
+        <h3 class="text-l font-semibold text-gray-800 text-center py-4">IGarden at the 2025 World Expo</h3>
+        <img 
+          src="https://www.fairlandgroup.com/core/extend/kindeditor/attached/image/20250516/20250516150234_80162.jpg" 
+          class="w-full h-64 object-cover"
+        />
+      </div>
+ </div>
+</div>
+<!-- After Partners Section: Service Highlights -->
+<div class="text-center mb-12 animate-fade-in">
+    <!-- Add margin-top to move the title down -->
+    <h3 class="text-3xl md:text-4xl font-bold text-gray-900 mb-12 text-center mt-12 animate-fade-in">Our After-Sales Service</h3>
+    
+    <div class="grid grid-cols-4 gap-6 max-w-6xl mx-auto">
+        <!-- 24 Failures respond -->
+        <div class="p-4 bg-white rounded-lg shadow-lg transform transition duration-500 hover:scale-105 animate-fade-in-up">
+            <div class="text-4xl font-bold text-orange-500 mb-2">24</div>
+            <div class="text-gray-600">Failures respond within 24 hours</div>
+        </div>
+        <!-- 72 Solutions offer -->
+        <div class="p-4 bg-white rounded-lg shadow-lg transform transition duration-500 hover:scale-105 animate-fade-in-up delay-100">
+            <div class="text-4xl font-bold text-orange-500 mb-2">72</div>
+            <div class="text-gray-600">Solutions offer within 72 hours</div>
+        </div>
+        <!-- 72 Main spare parts -->
+        <div class="p-4 bg-white rounded-lg shadow-lg transform transition duration-500 hover:scale-105 animate-fade-in-up delay-200">
+            <div class="text-4xl font-bold text-orange-500 mb-2">72</div>
+            <div class="text-gray-600">Main spare parts express within 72 hours</div>
+        </div>
+        <!-- 24/7 Online Service -->
+        <div class="p-4 bg-white rounded-lg shadow-lg transform transition duration-500 hover:scale-105 animate-fade-in-up delay-300">
+            <div class="text-4xl font-bold text-orange-500 mb-2">24/7</div>
+            <div class="text-gray-600">Online service</div>
+        </div>
+    </div>
+</div>
+
+<!-- Tailwind Animations -->
+<style>
+@keyframes fade-in-up {
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in-up {
+  animation: fade-in-up 0.8s ease forwards;
+}
+.delay-100 { animation-delay: 0.1s; }
+.delay-200 { animation-delay: 0.2s; }
+.delay-300 { animation-delay: 0.3s; }
+</style>
+
+<section id="about" class="py-20 bg-slate-100">
+  <div class="container mx-auto px-6">
+    <!-- Title -->
+    <div class="text-center mb-6">
+      <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4 animate-fade-in">
+        26 Years of Innovation: The Fairland Story
+      </h2>
+    </div>
+   </section>
+    <!-- Image left, text right -->
+    <div class="flex flex-col md:flex-row items-center max-w-6xl mx-auto gap-8">
+      <!-- Image -->
+      <div class="w-full md:w-1/2 overflow-hidden rounded-lg">
+        <img src="https://store.igarden.ai/cdn/shop/files/DTC__KV_1920_1080_04c16026-9309-4a59-b68f-d9bffea789f4.jpg?v=1752138727&width=1920"
+             alt="iGarden Showcase"
+             class="w-full h-auto object-cover transform scale-115 transition-transform duration-500 hover:scale-120">
+      </div>
+
+                      <!-- Text -->
+                      <div class="w-full md:w-1/2">
+                        <p class="text-lg text-gray-600 animate-fade-in">
+          iGarden is born from Fairland's technological legacy and a mission to deliver exceptional value. 
+          For over two decades, we have not only pushed the limits of outdoor technology—growing the pool heat pump industry <span class="font-bold">from $100 million to $1.2 billion</span>—but have done so hand-in-hand with our global partners and a commitment to extreme customer service. 
+          Our DNA of innovation and service is embedded in the iGarden robot.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+               </section> 
+<div class="max-w-6xl mx-auto px-4 py-12">
+  <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-12 text-center animate-fade-in">
+    From Heat Pumps to Robots: A Shared Technology Legacy
+  </h2>
+  <div class="flex items-center gap-6">
+    <p class="text-lg text-gray-600 max-w-4xl">
+      As a leader in the pool heat pump sector, Fairland revolutionized industry standards with our groundbreaking 
+      <span class="font-bold">Full-Inverter Technology</span> and 
+      <span class="font-bold">HP-Booster Technology</span>. These innovations dramatically improved energy efficiency and performance, earning us widespread market recognition. 
+      The same core philosophy—'creating more value with less energy'—powers iGarden, making it the most energy-efficient and longest-endurance robot on the market.
+    </p>
+    <img 
+      src="https://www.fairland.com.cn/core/extend/kindeditor/attached/image/20221022/20221022153845_96621.png" 
+      alt="Fairland Technology" 
+      class="w-2/3 rounded-xl shadow-md transform transition-transform duration-300 hover:scale-105"
+    />
+  </div>
+</div>
+<div class="text-center mb-12 animate-fade-in">
+    <h3 class="text-3xl md:text-4xl font-bold text-gray-900 mb-12 text-center animate-fade-in">
+    Empowering the Future Together: Our Global Partners & Service Promise
+</h3>
+
+<!-- Partners Grid -->
+<div class="grid grid-cols-4 gap-6 max-w-6xl mx-auto mb-8">
+    <img src="https://www.fairland.com.cn/static/upload/image/20221122/1669112917108030.png" class="w-2/3 h-16 object-contain mx-auto">
+    <img src="https://www.fairland.com.cn/static/upload/image/20221122/1669112917262724.png" class="w-2/3 h-16 object-contain mx-auto">
+    <img src="https://www.fairland.com.cn/static/upload/image/20221122/1669112917584375.png" class="w-2/3 h-16 object-contain mx-auto">
+    <img src="https://www.fairland.com.cn/static/upload/image/20221122/1669113161644062.png" class="w-2/3 h-16 object-contain mx-auto">
+
+    <img src="https://www.fairland.com.cn/static/upload/image/20230807/1691370348931710.jpg" class="w-2/3 h-16 object-contain mx-auto">
+    <img src="https://www.fairland.com.cn/static/upload/image/20240730/1722320441219843.png" class="w-2/3 h-16 object-contain mx-auto">
+    <img src="https://www.fairland.com.cn/static/upload/image/20230721/1689921412451978.png" class="w-2/3 h-16 object-contain mx-auto">
+    <img src="https://www.fairland.com.cn/static/upload/image/20250213/1739416014802903.png" class="w-2/3 h-16 object-contain mx-auto">
+
+    <img src="https://www.fairland.com.cn/static/upload/image/20250625/1750842528741862.png" class="w-2/3 h-16 object-contain mx-auto">
+    <img src="https://www.fairland.com.cn/static/upload/image/20250625/1750841556194385.png" class="w-2/3 h-16 object-contain mx-auto">
+    <img src="https://www.fairland.com.cn/static/upload/image/20250625/1750841556954848.png" class="w-2/3 h-16 object-contain mx-auto">
+    <img src="https://www.fairland.com.cn/static/upload/image/20240730/1722320583149432.png" class="w-2/3 h-16 object-contain mx-auto">
+</div> 
+
+                <div class="relative max-w-2xl mx-auto">
+                    <img src="https://www.fairlandgroup.com/static/upload/image/20250124/1737707234774539.jpg" alt="" class="mx-auto rounded-lg shadow-md mb-8">
+                    <div class="relative">
+                        <div class="absolute left-1/2 h-full w-0.5 bg-slate-300 transform -translate-x-1/2"></div>
+                        <div class="space-y-12">
+                            <div class="relative animate-fade-in">
+                                <div class="absolute left-1/2 top-1/2 w-4 h-4 bg-sky-600 rounded-full transform -translate-x-1/2 -translate-y-1/2 border-4 border-white"></div>
+                                <div class="flex items-center justify-start md:justify-end md:text-right">
+                                    <div class="md:w-5/12 p-4">
+                                        <p class="text-lg font-bold text-sky-600">1999</p>
+                                        <h3 class="text-xl font-semibold text-gray-900">Fairland Brand Established</h3>
+                                        <p class="text-gray-600">Our journey of innovation begins.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="relative animate-fade-in">
+                                <div class="absolute left-1/2 top-1/2 w-4 h-4 bg-sky-600 rounded-full transform -translate-x-1/2 -translate-y-1/2 border-4 border-white"></div>
+                                <div class="flex items-center justify-start">
+                                     <div class="md:w-5/12 md:ml-auto p-4">
+                                        <p class="text-lg font-bold text-sky-600">2012</p>
+                                        <h3 class="text-xl font-semibold text-gray-900">HP-Booster Technology</h3>
+                                        <p class="text-gray-600">Our first energy optimization technology, bringing higher performance to heat pumps.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="relative animate-fade-in">
+                                <div class="absolute left-1/2 top-1/2 w-4 h-4 bg-sky-600 rounded-full transform -translate-x-1/2 -translate-y-1/2 border-4 border-white"></div>
+                                <div class="flex items-center justify-start md:justify-end md:text-right">
+                                    <div class="md:w-5/12 p-4">
+                                        <p class="text-lg font-bold text-sky-600">2014</p>
+                                        <h3 class="text-xl font-semibold text-gray-900">Full-Inverter Technology</h3>
+                                        <p class="text-gray-600">Groundbreaking technology that transformed pool heating efficiency.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="relative animate-fade-in">
+                                <div class="absolute left-1/2 top-1/2 w-4 h-4 bg-sky-600 rounded-full transform -translate-x-1/2 -translate-y-1/2 border-4 border-white"></div>
+                                <div class="flex items-center justify-start">
+                                    <div class="md:w-5/12 md:ml-auto p-4">
+                                        <p class="text-lg font-bold text-sky-600">2023</p>
+                                        <h3 class="text-xl font-semibold text-gray-900">AI Wireless Robot Launched</h3>
+                                        <p class="text-gray-600">After 7 years of R&D, iGarden is officially launched with over 50,000 units shipped in its first year.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="relative animate-fade-in">
+                                <div class="absolute left-1/2 top-1/2 w-4 h-4 bg-sky-600 rounded-full transform -translate-x-1/2 -translate-y-1/2 border-4 border-white"></div>
+                                <div class="flex items-center justify-start md:justify-end md:text-right">
+                                    <div class="md:w-5/12 p-4">
+                                        <p class="text-lg font-bold text-sky-600">2024</p>
+                                        <h3 class="text-xl font-semibold text-gray-900">Guinness World Record</h3>
+                                        <p class="text-gray-600">Set a world record for the longest endurance, establishing our leadership.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="team" class="py-20 bg-white">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4 animate-fade-in">Meet the Team</h2>
+                    <p class="text-lg text-gray-600 max-w-3xl mx-auto animate-fade-in">Our vision is brought to life by a team of dedicated leaders who combine a passion for innovation with deep industry expertise.</p>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <!-- Updated with Eileen Zhong -->
+                    <div class="bg-slate-100 p-6 rounded-lg shadow-md text-center animate-fade-in">
+                        <img src="https://www.fairland.com.cn/core/extend/kindeditor/attached/image/20221111/20221111142428_51046.jpg" alt="Eileen Zhong, Global Sales Director" class="w-24 h-24 rounded-full mx-auto mb-4">
+                        <h3 class="text-xl font-semibold text-gray-900">Eileen Zhong</h3>
+                        <p class="text-sky-600 mb-2">Global Sales Director</p>
+                        <p class="text-gray-600 text-sm">As our Global Sales Director, Eileen Zhong is responsible for our international market strategy and forging key partnerships to expand our reach.</p>
+                    </div>
+                    <!-- Updated with Terence Liu -->
+                    <div class="bg-slate-100 p-6 rounded-lg shadow-md text-center animate-fade-in">
+                        <img src="https://www.fairland.com.cn/template/default/images/pages/abous3_4.jpg" alt="Terence Liu, Heat Pump Sales Director" class="w-24 h-24 rounded-full mx-auto mb-4">
+                        <h3 class="text-xl font-semibold text-gray-900">Terence Liu</h3>
+                        <p class="text-sky-600 mb-2">Heat Pump Sales Director</p>
+                        <p class="text-gray-600 text-sm">Terence Liu leads our heat pump sales division, leveraging his deep market knowledge to drive growth and maintain our leadership in this core segment.</p>
+                    </div>
+                    <!-- Updated with Monica Luo -->
+                    <div class="bg-slate-100 p-6 rounded-lg shadow-md text-center animate-fade-in">
+                        <img src="https://www.fairland.com.cn/core/extend/kindeditor/attached/image/20240319/20240319160203_93624.jpeg" alt="Monica Luo, Solar Sales Director" class="w-24 h-24 rounded-full mx-auto mb-4">
+                        <h3 class="text-xl font-semibold text-gray-900">Monica Luo</h3>
+                        <p class="text-sky-600 mb-2">Solar Sales Director</p>
+                        <p class="text-gray-600 text-sm">Monica Luo heads our solar division, focusing on sustainable and innovative solar solutions that complement our commitment to energy efficiency.</p>
+                    </div>
+                    <div class="bg-slate-100 p-6 rounded-lg shadow-md text-center animate-fade-in">
+                        <img src="https://www.fairland.com.cn/template/default/images/pages/abous3_3.jpg" alt="Eva Tang, AI-wireless Robot Sales Director" class="w-24 h-24 rounded-full mx-auto mb-4" onerror="this.src='https://placehold.co/100x100?text=Eva'">
+                        <h3 class="text-xl font-semibold text-gray-900">Eva Tang</h3>
+                        <p class="text-sky-600 mb-2">AI-wireless Robot Sales Director</p>
+                        <p class="text-gray-600 text-sm">Eva Tang spearheads our global sales strategy, building strong partnerships and bringing our innovative wireless robots to markets worldwide.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-gray-800 text-white py-12">
+        <div class="container mx-auto px-6 text-center">
+            <h3 class="text-3xl font-bold mb-4">Our Vision: One Pool, One Wireless Robot.</h3>
+            <p class="max-w-2xl mx-auto mb-6">We believe the future of pool maintenance is effortless. With Fairland's 26 years of technical expertise, our unwavering commitment to our partners, and iGarden's exceptional products, we are ready to lead the American market and deliver extraordinary value to our customers.</p>
+            <p class="text-gray-400">&copy; 2025 Fairland & iGarden. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            if (mobileMenuButton && mobileMenu) {
+                mobileMenuButton.addEventListener('click', () => {
+                    mobileMenu.classList.toggle('hidden');
+                });
+            }
+
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('main section');
+
+            const sectionObserverOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.3
+            };
+
+            const sectionObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const id = entry.target.getAttribute('id');
+                        navLinks.forEach(link => {
+                            link.classList.remove('active');
+                            if (link.getAttribute('href') === `#${id}`) {
+                                link.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            }, sectionObserverOptions);
+
+            sections.forEach(section => {
+                sectionObserver.observe(section);
+            });
+
+            const fadeElements = document.querySelectorAll('.animate-fade-in');
+            const fadeObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            fadeElements.forEach(el => {
+                fadeObserver.observe(el);
+            });
+
+            // Chart.js initialization for endurance chart (only chart remaining that uses Chart.js)
+            const enduranceCtx = document.getElementById('enduranceChart')?.getContext('2d');
+            if (enduranceCtx) {
+                new Chart(enduranceCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Market Average', 'iGarden'],
+                        datasets: [{
+                            label: 'Endurance (Hours)',
+                            data: [2, 9],
+                            backgroundColor: ['#94A3B8', '#3B82F6'], /* Gray and Blue */
+                            borderRadius: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false // Hide legend for this simple bar chart
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: (context) => `${context.label}: ${context.raw}h`
+                                }
+                            }
+                        },
+                        indexAxis: 'y', // Horizontal bar chart
+                        scales: {
+                            x: {
+                                beginAtZero: true,
+                                ticks: {
+                                    color: '#64748B',
+                                    callback: function(value) {
+                                        return value + 'h';
+                                    }
+                                },
+                                grid: {
+                                    color: '#CBD5E1'
+                                }
+                            },
+                            y: {
+                                ticks: { color: '#64748B' },
+                                grid: { display: false }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // German Pool Types Chart
+            const germanPoolTypesCtx = document.getElementById('germanPoolTypesChart')?.getContext('2d');
+            if (germanPoolTypesCtx) {
+                new Chart(germanPoolTypesCtx, {
+                    type: 'bar', // Bar chart for comparison
+                    data: {
+                        labels: ['Other', 'Swim-Spa', 'Indoorpool', 'Whirlpool', 'Underground Outdoor Pool', 'Above-Ground Pool'],
+                        datasets: [
+                            {
+                                label: '2021',
+                                data: [148900, 134200, 155600, 241000, 722100, 703200],
+                                backgroundColor: '#60A5FA', // Blue for 2021
+                                borderRadius: 4
+                            },
+                            {
+                                label: '2023',
+                                data: [53400, 117100, 141700, 232100, 770300, 739400],
+                                backgroundColor: '#EF4444', // Red for 2023
+                                borderRadius: 4
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                                labels: {
+                                    color: '#64748B',
+                                    font: {
+                                        family: "'Inter', sans-serif",
+                                    }
+                                }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: (context) => `${context.dataset.label}: ${context.raw.toLocaleString()} units`
+                                },
+                                bodyFont: {
+                                    family: "'Inter', sans-serif",
+                                },
+                                titleFont: {
+                                    family: "'Inter', sans-serif",
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                beginAtZero: true,
+                                ticks: {
+                                    color: '#64748B'
+                                },
+                                grid: {
+                                    color: '#CBD5E1'
+                                }
+                            },
+                            y: {
+                                ticks: {
+                                    color: '#64748B'
+                                },
+                                grid: {
+                                    display: false
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+
+            // Path Animation Logic
+            const pathContainer = document.getElementById('path-animation-container');
+            const coverageCounter = document.getElementById('coverage-counter');
+            if (pathContainer && coverageCounter) {
+                const dot = pathContainer.querySelector('.path-dot');
+                let coverage = 0;
+                let isAnimating = false;
+
+                const animatePath = () => {
+                    if(isAnimating) return;
+                    isAnimating = true;
+                    const width = pathContainer.clientWidth - 12; // Adjust for dot size
+                    const height = pathContainer.clientHeight - 12; // Adjust for dot size
+                    let x = 0;
+                    let y = 10;
+                    let direction = 1; // 1 for right, -1 for left
+                    coverage = 0;
+
+                    const move = () => {
+                        if (coverage >= 100) {
+                            coverage = 100;
+                            coverageCounter.textContent = `Coverage: ${coverage}%`;
+                            setTimeout(() => {
+                                // Reset for next animation cycle
+                                coverage = 0;
+                                isAnimating = false;
+                                coverageCounter.textContent = `Coverage: 0%`;
+                            }, 1000);
+                            return;
+                        }
+
+                        x += 2 * direction; // Move 2px per frame
+
+                        // Reverse direction if hitting horizontal boundaries
+                        if (x >= width || x <= 0) {
+                            direction *= -1; // Reverse direction
+                            y += 30; // Move down to next "row"
+                        }
+
+                        // Apply new position
+                        dot.style.transform = `translate(${x}px, ${y}px)`;
+
+                        // Calculate coverage based on path progression
+                        // This is a simplified calculation for a visual effect
+                        const totalPathEstimate = (height / 30) * width; // Rough estimate of total path length
+                        const currentPathProgress = (y / 30) * width + x;
+                        coverage = Math.min(100, Math.floor((currentPathProgress / totalPathEstimate) * 100));
+
+                        coverageCounter.textContent = `Coverage: ${coverage}%`;
+
+                        if (y > height) {
+                            y = 10;
+                            x = 0;
+                            direction = 1;
+                        }
+                        requestAnimationFrame(move); // Continue animation
+                    };
+                    move(); // Start the animation
+                };
+
+                // Observe path container to start animation when it's in view
+                const pathObserver = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            animatePath();
+                            pathObserver.disconnect(); // Only animate once it comes into view
+                        }
+                    });
+                }, { threshold: 0.5 }); // Trigger when 50% of the element is visible
+                pathObserver.observe(pathContainer);
+            }
+        });
+    </script>
+</body>
+</html>
